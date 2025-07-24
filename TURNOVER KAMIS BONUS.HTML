@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard Komisi Turnover</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .game-section {
+      background: white;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #4CAF50;
+      margin-top: 0;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: monospace;
+      resize: vertical;
+    }
+    button {
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    .total-row {
+      font-weight: bold;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Dashboard Komisi Turnover</h1>
+
+  <!-- Livegame Section -->
+  <div class="game-section">
+    <h2>🎲 Livegame (Komisi 0.1%)</h2>
+    <textarea id="livegameInput" placeholder="Contoh format:
+username1    1,000,000
+username2    2.000.000"></textarea>
+    <button onclick="hitungKomisi('livegameInput', 'livegameTable', 0.1)">Hitung Komisi Livegame</button>
+    <table id="livegameTable"></table>
+  </div>
+
+  <!-- Pragmatic Play Section -->
+  <div class="game-section">
+    <h2>🎰 Pragmatic Play (Komisi 0.1%)</h2>
+    <textarea id="pragmaticInput" placeholder="Contoh format:
+username1    1,000,000
+username2    2.000.000"></textarea>
+    <button onclick="hitungKomisi('pragmaticInput', 'pragmaticTable', 0.1)">Hitung Komisi Pragmatic</button>
+    <table id="pragmaticTable"></table>
+  </div>
+
+  <!-- Arcade Section -->
+  <div class="game-section">
+    <h2>🕹️ Arcade (Komisi 0.1%)</h2>
+    <textarea id="arcadeInput" placeholder="Contoh format:
+username1    1,000,000
+username2    2.000.000"></textarea>
+    <button onclick="hitungKomisi('arcadeInput', 'arcadeTable', 0.1)">Hitung Komisi Arcade</button>
+    <table id="arcadeTable"></table>
+  </div>
+
+  <!-- Slot Section -->
+  <div class="game-section">
+    <h2>🎪 Slot (Komisi 0.3%)</h2>
+    <textarea id="slotInput" placeholder="Contoh format:
+username1    1,000,000
+username2    2.000.000"></textarea>
+    <button onclick="hitungKomisi('slotInput', 'slotTable', 0.3)">Hitung Komisi Slot</button>
+    <table id="slotTable"></table>
+  </div>
+
+  <!-- Elottre Section -->
+  <div class="game-section">
+    <h2>🎯 Elottre (Komisi 0.3%)</h2>
+    <textarea id="elottreInput" placeholder="Contoh format:
+username1    1,000,000
+username2    2.000.000"></textarea>
+    <button onclick="hitungKomisi('elottreInput', 'elottreTable', 0.3)">Hitung Komisi Elottre</button>
+    <table id="elottreTable"></table>
+  </div>
+
+  <script>
+    const validUsernames = [
+      "koklola77", "ebis", "breakbeat", "vaseline80", "zh4ndy", "purnomo1993", "rafa2911", "mond99", "4nggr4", "ippang212121",
+      "rafardhan29", "liyang", "salampe2323", "win996", "yankls", "subawa123", "ciqli69", "janokoireng", "winwin12", "akmal72",
+      "herisatriadi", "bjo1306", "cemongku17", "salehefendi", "qqbigwin3", "djorel85", "widyaagara", "jessy2411", "negla123", "siegra87",
+      "julius111", "pordi99", "ceting13", "hidupbaru", "debby241119", "swaraguruh", "rizal2323", "andikris", "coullank", "manis77",
+      "cuppang88", "leo9888", "abidin135", "capee", "homa50", "erwin9755", "emi8888", "dj49", "renxamin", "tegleng",
+      "putri234", "umul77", "capcai789", "rizal023", "diky94", "raysa2022", "clasmild16", "fadyas", "axera8", "fariscr7",
+      "rajax5000", "bangkit2001", "bantex", "fendidwi99", "ruslan1515", "yank", "joni16", "waskita86", "piyat01", "sinabungjaya",
+      "ghifari99", "hiskia88", "kambie", "apoey14", "coklat12345", "acha222", "irfan1412", "zimba51", "karna123", "junaidi123",
+      "rizkyy", "paman3", "rafael19", "anjany", "nuryani90", "komando87", "sisko0410", "jefri02", "bankhotan", "gongso",
+      "merpati03", "kakek22", "cafarunerz2", "ahmadmong123", "mhdansyr", "bongkeng90", "ayam1975", "suzuki975", "yonz25", "ade1",
+      "selaluhoki88", "andi311504", "elyas86", "lacilaka7799", "papasi", "jameston", "anyalove", "molong", "kristal79", "bca86",
+      "soplo69", "zhoel0180", "edy888", "haekal777", "elfarik31", "arman772", "tahuisi", "darwoto", "jayanatan", "budisu1985",
+      "pausjp", "ashar27", "jt888", "verhy", "hino500", "aceng751", "haryanto86", "ebez33", "andypratama", "orangkaya1",
+      "revenkadek", "bsi2023", "korim", "dickydick280", "88batak", "oneone80", "kobil", "robin898", "subur1234", "erna7799",
+      "soraya23", "landak23", "tingting29", "tulit", "aruyan38", "digol2701", "aby999", "apogel", "ratuitil", "ti5eti",
+      "alod", "linedihati", "toto18jt", "aswin25", "palomak", "heriyanto999", "hmzf05", "roni227", "subita", "bapa123",
+      "agu12345", "dewahoki88", "kianbeng", "gipsun1", "sapibabon123", "ondhoys", "juragan88", "wali4774", "cakbakir09", "callmefreak",
+      "wapo123", "arif0806", "opanbt1979", "hksukses", "didith", "vivi25", "mitra55", "papi88", "rusli81", "pacemuyu1",
+      "dika01389", "gib31", "yudih86", "johnpaull", "faatall", "nunez99", "kuku54", "teguh9", "ambar90", "butet97",
+      "h2023lt", "rajahalim23", "coklatpanas", "cipenk123", "ardina12", "sujiono", "kangpecel29", "ringkap20", "01tutul01", "barokah74",
+      "lohan999", "pahabis77", "hermaen", "guns1982", "bostukkel", "putry135", "fra007", "bambeng11", "alpha21", "paul1978",
+      "yantoo", "skyy88", "saha98", "san18", "dickyf", "dina123456", "agus94", "eppan25", "koloay311295", "maszex",
+      "aldy149", "znd888", "atunk79", "hokikoki88", "rumad", "novita", "gc172k", "dewa807", "andryan8888", "clarence85",
+      "ulpa90", "mikenji", "kuce", "shudi80", "kain123", "andiaxo123", "mang1ring57", "pakdo", "hamsale", "suharlii",
+      "imamjaya15", "logeman11", "kopigadjah", "helmyaulia", "ikuk12", "kingsakti88", "bolehy4", "nufail05", "raja01", "jap8888",
+      "amr173", "zakiputra", "irawati123", "mapaccing123", "mala02", "ichaonhoky", "maura1120", "poris86", "moke123", "resvi",
+      "bandotasu8", "tn1234", "muzda99", "agungkayan", "ajilolo99", "arsyila08", "akifa2000", "budidolken93", "chibexcool", "gusti1201",
+      "eky1", "f2komara", "kakjig", "gris123", "lutfi124", "juwara11", "junaidi84", "merlep861", "bayangan212", "steven16",
+      "mira289", "neng102", "ryaneka", "taslimjhy", "tamgold", "yahya29", "aalena", "aka334", "123berkah", "resti2309",
+      "juliet", "tedongbonga", "ae9687", "berukrawa", "fauzi321", "fikram123", "narti01", "benjot02", "hamid303", "dodolijo",
+      "bobanknalpot", "akhsin080893", "aga777", "25tahirzaki", "ahmad016", "bgst1", "agung333", "amatleva31", "nervawalaufa", "miptah",
+      "99jpbos", "hancur001", "hanliem", "innova1050", "honda02", "jindanmul77", "jugul83", "hartasaganta", "jack45", "jamphez",
+      "jajaran123", "antonina70", "andry2809", "damai31", "bapakbokep69", "anthodjie77", "arwin66", "kuwok212", "laba99", "jelas89",
+      "monster92", "munandar13", "nishadewi", "kappa99", "iman17", "alisha39", "kodrat123", "jpwinwin", "arisj3mb07", "alvian007",
+      "dhorhi89", "tg0612", "restu2018", "vhie01"
+    ];
+
+    // Fungsi untuk hapus tanda titik dan koma dari input angka, lalu ambil bagian integer saja
+    function bersihkanAngka(str) {
+      // Hilangkan semua titik dan koma
+      let bersih = str.replace(/[.,]/g, '');
+      // Ambil angka bulat saja (hilangkan desimal)
+      // Karena sudah dihapus semua tanda koma/titik, ini sudah integer murni
+      let angka = parseInt(bersih, 10);
+      return isNaN(angka) ? 0 : angka;
+    }
+
+    // Format angka dengan ribuan koma, tanpa desimal
+    function formatNominal(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function hitungKomisi(inputId, tableId, persen) {
+      const text = document.getElementById(inputId).value.trim();
+      const lines = text.split('\n');
+      let html = '<tr><th>Username</th><th>Turnover</th><th>Komisi</th></tr>';
+      let totalKomisi = 0;
+      let totalValid = 0;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line === '') continue;
+
+        const separator = line.includes('\t') ? '\t' : ' ';
+        const kolom = line.split(separator).filter(item => item.trim() !== '');
+
+        if (kolom.length < 2) continue;
+
+        const nama = kolom[0].trim();
+
+        if (!validUsernames.includes(nama)) continue;
+
+        // Ambil angka bersih (tanpa titik/koma, integer)
+        const turnover = bersihkanAngka(kolom[1]);
+
+        const komisiRaw = Math.floor(turnover * persen / 100);
+
+        if (komisiRaw < 5000) continue;
+
+        totalKomisi += komisiRaw;
+        totalValid++;
+
+        const turnoverFormatted = formatNominal(turnover);
+        const komisiFormatted = formatNominal(komisiRaw);
+
+        html += `<tr>
+          <td>${nama}</td>
+          <td style="text-align: right;">${turnoverFormatted}</td>
+          <td style="text-align: right;">${komisiFormatted}</td>
+        </tr>`;
+      }
+
+      const totalKomisiFormatted = formatNominal(totalKomisi);
+      html += `<tr class="total-row">
+        <td colspan="2">TOTAL (${totalValid} Valid)</td>
+        <td style="text-align: right;">${totalKomisiFormatted}</td>
+      </tr>`;
+
+      document.getElementById(tableId).innerHTML = html;
+    }
+  </script>
+</body>
+</html>
